@@ -112,11 +112,3 @@ WITH t_books_authors_rating as
 		JOIN authors ON t_books_authors_rating.authors_id = authors.id
 	ORDER BY avg_rating_author DESC
 	LIMIT 10;
-
-
-
-
-
-
-
-
