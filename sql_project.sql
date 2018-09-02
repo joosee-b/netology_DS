@@ -112,3 +112,19 @@ WITH t_books_authors_rating as
 		JOIN authors ON t_books_authors_rating.authors_id = authors.id
 	ORDER BY avg_rating_author DESC
 	LIMIT 10;
+
+-- Представление 1 - Представление с годами публикаций авторов
+CREATE VIEW t_avg_rating_books AS
+SELECT author_name, pub_year
+	FROM books
+	JOIN authors ON  books.authors_id = authors.id
+	ORDER BY pub_year ASC
+LIMIT 10;
+
+-- Представление 2 - Представление со средним рейтингом по книгам и авторам
+CREATE VIEW books_author_rating AS
+SELECT DISTINCT books.book_id, books.authors_id,
+		AVG(rating) OVER (PARTITION BY ratings.book_id) as avg_rating
+	FROM ratings
+		JOIN books
+		ON ratings.book_id = books.book_id;
