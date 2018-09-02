@@ -1,0 +1,6 @@
+version: '1'
+services:
+  postgres_host:
+    image: postgres:10-alpine
+    restart: always
+    ports: ["5432:5432"]
