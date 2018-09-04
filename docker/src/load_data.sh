@@ -1,3 +1,5 @@
+#!/bin/sh
+
 psql --host $APP_POSTGRES_HOST  -U postgres -c \
     "DROP TABLE IF EXISTS books"
 psql --host $APP_POSTGRES_HOST  -U postgres -c \
@@ -36,8 +38,7 @@ echo "Загружаем titles_edited.csv..."
 psql --host $APP_POSTGRES_HOST -U postgres -c '
   CREATE TABLE IF NOT EXISTS titles (
     id int PRIMARY KEY,
-    title text,
-    authors_id bigint
+    title text
   );'
 psql --host $APP_POSTGRES_HOST -U postgres -c \
     "\\copy titles FROM '/data/titles_edited.csv' DELIMITER ';' CSV HEADER"
