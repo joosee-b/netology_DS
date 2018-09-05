@@ -45,8 +45,10 @@ WITH t_avg_rating_books as
 	)
 	SELECT title, avg_rating
 		FROM t_avg_rating_books
+		JOIN books
+		ON t_avg_rating_books.book_id = books.id
 		JOIN titles
-		ON t_avg_rating_books.book_id = titles.id
+		ON books.title_id = titles.id
 	ORDER BY avg_rating DESC
 	LIMIT 10;
 
@@ -61,7 +63,7 @@ LIMIT 10;
 -- Запрос 3.7 - Вывести список авторов и количество книг, написанных каждым автором
 WITH t_count_books as
 	(SELECT DISTINCT authors_id,
-		COUNT(book_id) as count_books
+		COUNT(id) as count_books
 			FROM books
 			GROUP BY authors_id
 	)
@@ -80,7 +82,10 @@ WITH t_count_rating_books as
 	)
 	SELECT title, count_rating
 		FROM t_count_rating_books
-		JOIN titles ON t_count_rating_books.book_id = titles.id
+		JOIN books
+		ON t_count_rating_books.book_id = books.id
+		JOIN titles
+		ON books.title_id = titles.id
 	ORDER BY count_rating ASC
 	LIMIT 10;
 
@@ -89,7 +94,7 @@ WITH t_count_rating_books as
 	(SELECT DISTINCT ratings.book_id, authors_id,
 		COUNT(rating) OVER (PARTITION BY ratings.book_id) as count_rating
 		FROM ratings
-		JOIN books ON ratings.book_id = books.book_id
+		JOIN books ON ratings.book_id = books.id
 	)
 	SELECT DISTINCT author_name, 
 		SUM (count_rating) OVER (PARTITION BY authors_id) as count_rating_author
@@ -100,11 +105,11 @@ WITH t_count_rating_books as
 
 -- Запрос 3.10 - Вывести средний рейтинг авторов по среднему рейтингу всех написанных автором книг
 WITH t_books_authors_rating as
-	(SELECT DISTINCT books.book_id, books.authors_id,
+	(SELECT DISTINCT books.id, books.authors_id,
 		AVG(rating) OVER (PARTITION BY ratings.book_id) as avg_rating
 	FROM ratings
 		JOIN books
-		ON ratings.book_id = books.book_id
+		ON ratings.book_id = books.id
 	)
 	SELECT DISTINCT author_name, 
 		AVG(avg_rating) OVER (PARTITION BY t_books_authors_rating.authors_id) as avg_rating_author
@@ -123,8 +128,8 @@ LIMIT 10;
 
 -- Представление 4.2 - Представление со средним рейтингом по книгам и авторам
 CREATE VIEW books_author_rating AS
-SELECT DISTINCT books.book_id, books.authors_id,
+SELECT DISTINCT books.id, books.authors_id,
 		AVG(rating) OVER (PARTITION BY ratings.book_id) as avg_rating
 	FROM ratings
 		JOIN books
-		ON ratings.book_id = books.book_id;
+		ON ratings.book_id = books.id;
